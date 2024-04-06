@@ -71,13 +71,15 @@ class Metod:
             session.commit()
         session.close()
 
-    def get_user_random(self, qu_id):
+    def get_user_random(self, qu_id): # вытаскивает рандомно id юзера, закрепленного за гостем
         session = Session()
         guest_id = bd.get_qoest_id(qu_id)
         users_id = session.query(Guest_vk_users.vk_user_id).filter(Guest_vk_users.guest_id == guest_id).all()
         random_user_id = random.choice(users_id)
         r_users_vk = session.query(VK_users.vk_id).filter(VK_users.id == random_user_id[0]).first()[0]
         return r_users_vk
+
+bd = Metod()
 
 
 if __name__ == '__main__':

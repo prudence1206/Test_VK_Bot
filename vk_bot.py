@@ -19,9 +19,10 @@ def show_us(): #показывает кандидата
     # us = random.choice(DATA_US)
     us = bd.get_user_random(q_inf[0])
     us_info = ap.get_user_info(us)
+    print(us_info)
     us_url = f'https://vk.com/id{us}'
     write_msg(event.user_id, f'{us_info[1]} {us_info[2]}')
-    photos = ap.photos_user(g_id)
+    photos = ap.photos_user(us_info[0])
     write_msg(event.user_id, photos[0])
     # добавить фото
     # добавляем в избранное или удаляем из DATA_US
@@ -31,20 +32,20 @@ for event in longpoll.listen():
         if event.to_me:
             request = event.text
             q_inf = ap.get_user_info(event.user_id)  # получаем инфу по гостю
-            print(q_inf)
+            # print(q_inf)
             if q_inf[4] == 2: q_sex = 1    # меняем пол на противоположный
             else: q_sex = 2
-
             goest_in_bd = bd.add_quests(q_inf[0]) # есть или нет в базе (если нет то добавляет)
             if goest_in_bd == False:   #если гостя нет формируем базу юзеров
                 write_msg(event.user_id, f"Привет, {q_inf[1]}!")
                 write_msg(event.user_id, "Формируется база подходящих тебе кандидатов....ждите")
-                DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])  # вытаскиваем id юзеров из API VK (по критериям)
+                # DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])  # вытаскиваем id юзеров из API VK (по критериям)
+                DATA_US = ap.data_users(1, 1, 1986)
                 bd.add_users(q_inf[0],DATA_US)                     # записываем в базу
-                write_msg(event.user_id, "Для просмотра отправь сообщение - 'СЛЕДУЮЩИЙ'")
+                # write_msg(event.user_id, "Для просмотра отправь сообщение - 'СЛЕДУЮЩИЙ'")
                 write_msg(event.user_id, "Для просмотра избранного, отправь сообщение - 'ИЗБРАННОЕ'")
             write_msg(event.user_id, "Для просмотра кандидата набери команду 'ПОИСК'")
-            print(event.text)
+            # print(event.text)
             if request.upper() == 'ПОИСК':
                 show_us()
 

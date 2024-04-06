@@ -10,14 +10,18 @@ class VK_Users:
 
 
     def data_users(self, sex, city, year):
+        age_from = 2019-year
+        age_to = 2029-year
         params = {
             'access_token': self.TOKEN_USER,
             'sort': 0,
-            'count': 200,
+            'count': 1000,
             'has_photo': 1,
             'v': 5.199,
             'fields': 'city,sex,counters',
             'birth_year': year,
+            'age_from': age_from,
+            'age_to': age_to,
             'city': city,  # идентификатор города
             'sex': sex
         }
