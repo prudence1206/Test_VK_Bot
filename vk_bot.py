@@ -4,13 +4,13 @@ from Constant import TOKEN_GR, TOKEN_USER, TOKEN_GR2, TOKEN_GR3
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from ap_vk_users import VK_Users
-from base import Metod
+from base import Metod, create_tables
 
 vk = vk_api.VkApi(token=TOKEN_GR)
 longpoll = VkLongPoll(vk)
 ap = VK_Users(TOKEN_USER)
 bd = Metod()
-
+create_tables()
 
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7),})
@@ -26,28 +26,26 @@ def show_us(): #показывает кандидата
     # добавить фото
     # добавляем в избранное или удаляем из DATA_US
 
-
-
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW:
         if event.to_me:
             request = event.text
-            q_id = event.user_id
-            q_inf = ap.get_user_info(event.user_id)
+            q_inf = ap.get_user_info(event.user_id)  # получаем инфу по гостю
             print(q_inf)
-            if q_inf[4] == 2: q_sex = 1
+            if q_inf[4] == 2: q_sex = 1    # меняем пол на противоположный
             else: q_sex = 2
 
-            goest_in_bd = bd.add_quests(q_inf[0]) # есть или нет в списке bd добавить гостя
-            if goest_in_bd == False:   #если гостя нет
+            goest_in_bd = bd.add_quests(q_inf[0]) # есть или нет в базе (если нет то добавляет)
+            if goest_in_bd == False:   #если гостя нет формируем базу юзеров
                 write_msg(event.user_id, f"Привет, {q_inf[1]}!")
                 write_msg(event.user_id, "Формируется база подходящих тебе кандидатов....ждите")
-                DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])
-                bd.add_users(q_inf[0],DATA_US)
+                DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])  # вытаскиваем id юзеров из API VK (по критериям)
+                bd.add_users(q_inf[0],DATA_US)                     # записываем в базу
                 write_msg(event.user_id, "Для просмотра отправь сообщение - 'СЛЕДУЮЩИЙ'")
                 write_msg(event.user_id, "Для просмотра избранного, отправь сообщение - 'ИЗБРАННОЕ'")
-            write_msg(event.user_id, "Для просмотра кандидата набери команду 'СЛЕДУЮЩИЙ'")
-            if request.upper() == 'СЛЕДУЮЩИЙ':
+            write_msg(event.user_id, "Для просмотра кандидата набери команду 'ПОИСК'")
+            print(event.text)
+            if request.upper() == 'ПОИСК':
                 show_us()
 
             elif request.upper() == 'ИЗБРАННОЕ':
