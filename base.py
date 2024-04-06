@@ -82,7 +82,7 @@ class Metod:
 
 
 create_tables()
-# bd = Metod()
+bd = Metod()
 # bd.add_quests(7777)
 # print(bd.add_quests(88))
 # users = [345345,4553,777,444,5555]

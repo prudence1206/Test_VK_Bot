@@ -17,7 +17,7 @@ def write_msg(user_id, message):
 
 def show_us(): #показывает кандидата
     # us = random.choice(DATA_US)
-    us = bd.get_user_random(us_info[0])
+    us = bd.get_user_random(q_inf[0])
     us_info = ap.get_user_info(us)
     us_url = f'https://vk.com/id{us}'
     write_msg(event.user_id, f'{us_info[1]} {us_info[2]}')
@@ -40,14 +40,14 @@ for event in longpoll.listen():
 
             goest_in_bd = bd.add_quests(q_inf[0]) # есть или нет в списке bd добавить гостя
             if goest_in_bd == False:   #если гостя нет
-                write_msg(event.user_id, f"Привет, {g_inf[1]}!")
+                write_msg(event.user_id, f"Привет, {q_inf[1]}!")
                 write_msg(event.user_id, "Формируется база подходящих тебе кандидатов....ждите")
                 DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])
                 bd.add_users(q_inf[0],DATA_US)
                 write_msg(event.user_id, "Для просмотра отправь сообщение - 'СЛЕДУЮЩИЙ'")
                 write_msg(event.user_id, "Для просмотра избранного, отправь сообщение - 'ИЗБРАННОЕ'")
-
-            if request.upper() == 'СЛЕДУЮЩИЙ ПРОСМОТР':
+            write_msg(event.user_id, "Для просмотра кандидата набери команду 'СЛЕДУЮЩИЙ'")
+            if request.upper() == 'СЛЕДУЮЩИЙ':
                 show_us()
 
             elif request.upper() == 'ИЗБРАННОЕ':
