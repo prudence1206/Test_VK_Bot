@@ -42,10 +42,8 @@ class Metod:
     def add_quests(self,guest):    # добавляет гостя если отсутствует и возвращает False, или если есть то True
         session = Session()
         goests = session.query(Bot_guests.guest_vk_id).all()
-        print(goests)
         list_goests = [list(el) for el in goests]
         if [guest] not in list_goests:
-            print('ok')
             add_gu = Bot_guests(guest_vk_id=guest)
             session.add(add_gu)
             session.commit()
@@ -89,4 +87,5 @@ if __name__ == '__main__':
     # print(bd.add_quests(88))
     # users = [345345,4553,777,444,5555]
     # bd.add_users(7777,users)
-    # bd.get_user_random(7777)
+    user_vk = 711878878
+    print(bd.get_user_random(user_vk))

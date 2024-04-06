@@ -15,16 +15,24 @@ create_tables()
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7),})
 
+
 def show_us(): #показывает кандидата
-    # us = random.choice(DATA_US)
-    us = bd.get_user_random(q_inf[0])
-    us_info = ap.get_user_info(us)
+    photos = 'NONE'
+    while photos == 'NONE':     # проверяет наличие фото у кандидатов
+        us = bd.get_user_random(q_inf[0])
+        print(us)
+        us_info = ap.get_user_info(us)
+        print(us_info)
+        us_url = f'https://vk.com/id{us}'
+        photos = ap.photos_user(us_info[0]) # если вернет NONE, хорошо бы заодно удалить
     print(us_info)
-    us_url = f'https://vk.com/id{us}'
     write_msg(event.user_id, f'{us_info[1]} {us_info[2]}')
-    photos = ap.photos_user(us_info[0])
+    write_msg(event.user_id, f'{us_url}')
     write_msg(event.user_id, photos[0])
-    # добавить фото
+    write_msg(event.user_id, photos[1])
+    write_msg(event.user_id, photos[2])
+    write_msg(event.user_id, "Для просмотра следующего кандидата набери команду 'ПОИСК'")
+    write_msg(event.user_id, "Для просмотра избранного, набери команду - 'ИЗБРАННОЕ'")
     # добавляем в избранное или удаляем из DATA_US
 
 for event in longpoll.listen():
@@ -40,11 +48,12 @@ for event in longpoll.listen():
                 write_msg(event.user_id, f"Привет, {q_inf[1]}!")
                 write_msg(event.user_id, "Формируется база подходящих тебе кандидатов....ждите")
                 # DATA_US = ap.data_users(q_sex, q_inf[3], q_inf[5])  # вытаскиваем id юзеров из API VK (по критериям)
-                DATA_US = ap.data_users(1, 1, 1986)
+                DATA_US = ap.data_users(1, 2, 1986)
                 bd.add_users(q_inf[0],DATA_US)                     # записываем в базу
                 # write_msg(event.user_id, "Для просмотра отправь сообщение - 'СЛЕДУЮЩИЙ'")
-                write_msg(event.user_id, "Для просмотра избранного, отправь сообщение - 'ИЗБРАННОЕ'")
-            write_msg(event.user_id, "Для просмотра кандидата набери команду 'ПОИСК'")
+                write_msg(event.user_id, "Для просмотра следующего кандидата набери команду 'ПОИСК'")
+                write_msg(event.user_id, "Для просмотра избранного, набери команду - 'ИЗБРАННОЕ'")
+
             # print(event.text)
             if request.upper() == 'ПОИСК':
                 show_us()

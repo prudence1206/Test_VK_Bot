@@ -19,10 +19,10 @@ class VK_Users:
             'has_photo': 1,
             'v': 5.199,
             'fields': 'city,sex,counters',
-            'birth_year': year,
+            # 'birth_year': year,
             'age_from': age_from,
             'age_to': age_to,
-            'city': city,  # идентификатор города
+            'city': city,  # идентификатор , не название
             'sex': sex
         }
         data_users = []
@@ -52,35 +52,50 @@ class VK_Users:
         return user_info
 
 
-    def photos_user(self, user_vk):
+    def photos_user(self, user_vk): # возвращает 3 фото (макс лайки, учитывает совпадение) , если нет то возвращает NONE
         params = {
             'access_token': self.TOKEN_USER,
             'user_id': user_vk,
             'extended': 1,
             'v': 5.199
             }
-        photos = {}
+        photos = []
+        likes = []
         response = requests.get(f'{self.URL_API}/photos.getUserPhotos', params=params)
-        user_photos = response.json()['response']['items']
-        for photo in user_photos:
-             photos.update({photo['likes']['count']: photo['sizes'][-2]['url']})
-        sort_photos = sorted(photos.items())
-        photos = sort_photos[-3:]
-        return  (photos[0][1], photos[1][1], photos[2][1])
+        try:
+            user_photos = response.json()['response']['items']
+            if len(user_photos) > 3:
+                for photo in user_photos:
+                     likes.append(photo['likes']['count'])
+                sort_likes = sorted(likes, reverse=True)[:3]
+                for el in sort_likes:
+                    for photo in user_photos:
+                        if photo['likes']['count'] == el:
+                            photos.append(photo['sizes'][-1]['url'])
+                            break
+                pprint(user_photos)
+                result = photos
+            else:
+                result = 'NONE'
+        except:
+            result = 'NONE'
+        return result
 
 
+if __name__ == '__main__':
+    ap = VK_Users(TOKEN_USER)
+    sex = 1
+    city = 2
+    year = 1986
+    # data_qoest = ap.data_users(sex, city, year)
+    # pprint(data_qoest)
+    # user_vk = 711878878
+    # user_vk = 809529828
+    # print(ap.get_user_info(user_vk))
+    # pprint(data_qoest[0])
+    # user_vk = 711878878
+    user_vk = 331276386
+    # pprint(ap.photos_user(user_vk))
 
-# ap = VK_Users(TOKEN_USER)
-# sex = 1
-# city = 2
-# year = 1986
-# data_qoest = ap.data_users(sex, city, year)
-# pprint(data_qoest)
-# user_vk = 711878878
-# user_vk = 809529828
-# print(ap.get_user_info(user_vk))
-# pprint(data_qoest[0])
-# user_vk = 567469497
-# api.count_photos(data_qoest)
-# pprint(ap.photos_user(user_vk))
+    pprint(ap.photos_user(user_vk))
 
