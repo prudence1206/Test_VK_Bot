@@ -56,7 +56,6 @@ class VK_Users:
             'v': 5.199
             }
         photos = {}
-        like = 0
         response = requests.get(f'{self.URL_API}/photos.getUserPhotos', params=params)
         user_photos = response.json()['response']['items']
         for photo in user_photos:
